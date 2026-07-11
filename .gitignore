@@ -1,0 +1,21 @@
+# ==========================
+# Virtual Environment
+# ==========================
+.venv/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+
+# VS Code
+.vscode/
+
+# Streamlit
+.streamlit/
+
+# OS Files
+Thumbs.db
+.DS_Store
+
+# Git
+.git/
