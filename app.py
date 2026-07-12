@@ -3,8 +3,11 @@ from PIL import Image
 import os
 from datetime import datetime
 import pandas as pd
+import time
 
 from utils.model import detect_defects
+
+from utils.camera import get_camera_frame
 
 from utils.defect_engine import (
     generate_industrial_defects
@@ -17,13 +20,13 @@ from utils.inspection import (
     get_recommendation
 )
 
-from utils.report import generate_report
-
 from utils.analytics import (
     calculate_defect_severity,
     get_confidence_data,
     generate_inspection_summary
 )
+
+from utils.report import generate_report
 
 
 
@@ -40,7 +43,7 @@ st.set_page_config(
 
 
 # --------------------------------------------------
-# LOAD CSS
+# CSS
 # --------------------------------------------------
 
 if os.path.exists("styles/style.css"):
@@ -63,7 +66,7 @@ with st.sidebar:
     st.title("🏭 SteelVision AI")
 
     st.caption(
-        "Edge AI Industrial Inspection"
+        "Edge AI Industrial Inspection Platform"
     )
 
     st.divider()
@@ -92,11 +95,12 @@ st.markdown(
 </h1>
 
 <h3>
-AI Powered Predictive Maintenance Platform
+Real-Time Edge AI Machine Inspection
 </h3>
 
 <p>
-Industrial defect detection using Computer Vision and Edge AI.
+Computer Vision powered predictive maintenance
+for Industry 4.0.
 </p>
 
 </div>
@@ -112,30 +116,29 @@ unsafe_allow_html=True
 
 if page == "Edge AI Workflow":
 
-    st.title(
-        "⚡ Edge AI Workflow"
-    )
+    st.title("⚡ Edge AI Architecture")
+
 
     st.markdown(
 """
-Machine Camera
+Industrial Camera
 |
 ↓
-Edge AI Device
+Edge Device
 |
 ↓
-YOLO Vision Model
+YOLO Vision Engine
 |
 ↓
-Industrial Defect Engine
+Industrial Defect AI
 |
 ↓
-Health Intelligence
+Machine Health Score
 |
 ↓
-Maintenance Recommendation
+Maintenance Action
 
-### Production Roadmap
+Production Stack:
 
 Frontend:
 React
@@ -146,7 +149,7 @@ FastAPI
 
 
 AI:
-Custom YOLO Industrial Model
+Custom YOLO Model
 
 
 Database:
@@ -155,9 +158,9 @@ PostgreSQL
 
 Deployment:
 Docker + Edge Hardware
-
 """
 )
+
 
     st.stop()
 
@@ -169,15 +172,13 @@ Docker + Edge Hardware
 
 if page == "About":
 
-    st.title(
-        "About SteelVision AI"
-    )
+    st.title("About SteelVision AI")
 
     st.write(
 """
-SteelVision AI is an Industry 4.0 inspection platform
-that enables manufacturers to identify defects,
-monitor machine health and optimize maintenance.
+SteelVision AI is an affordable Edge AI
+inspection platform designed for factories
+to detect defects and reduce machine downtime.
 """
 )
 
@@ -195,23 +196,98 @@ st.subheader(
 
 
 
-uploaded_file = st.file_uploader(
-    "Upload Machine Image",
-    type=[
-        "jpg",
-        "jpeg",
-        "png"
+mode = st.radio(
+    "Inspection Mode",
+    [
+        "Upload Image",
+        "Live Camera"
     ]
 )
 
 
 
-if uploaded_file:
+image = None
 
 
-    image = Image.open(
-        uploaded_file
+
+# --------------------------------------------------
+# IMAGE MODE
+# --------------------------------------------------
+
+if mode == "Upload Image":
+
+
+    uploaded_file = st.file_uploader(
+        "Upload Machine Image",
+        type=[
+            "jpg",
+            "jpeg",
+            "png"
+        ]
     )
+
+
+    if uploaded_file:
+
+        image = Image.open(
+            uploaded_file
+        )
+
+
+
+# --------------------------------------------------
+# CAMERA MODE
+# --------------------------------------------------
+
+else:
+
+
+    st.info(
+        "📷 Edge Camera Mode Activated"
+    )
+
+
+    if st.button(
+        "Capture Inspection Frame"
+    ):
+
+
+        start = time.time()
+
+
+        image = get_camera_frame()
+
+
+        end = time.time()
+
+
+        if image:
+
+
+            fps = round(
+                1/(end-start),
+                2
+            )
+
+
+            st.success(
+                f"Camera frame captured | FPS: {fps}"
+            )
+
+
+        else:
+
+            st.error(
+                "Camera not available"
+            )
+
+
+
+# --------------------------------------------------
+# AI INSPECTION PIPELINE
+# --------------------------------------------------
+
+if image:
 
 
     col1,col2 = st.columns(2)
@@ -221,7 +297,7 @@ if uploaded_file:
     with col1:
 
         st.subheader(
-            "Original Image"
+            "Input Image"
         )
 
         st.image(
@@ -232,7 +308,7 @@ if uploaded_file:
 
 
     with st.spinner(
-        "Running AI inspection..."
+        "⚡ Edge AI analysing..."
     ):
 
 
@@ -241,7 +317,7 @@ if uploaded_file:
         )
 
 
-        industrial_defects = generate_industrial_defects(
+        defects = generate_industrial_defects(
             yolo_result["defects"]
         )
 
@@ -261,13 +337,9 @@ if uploaded_file:
 
 
 
-    defects = industrial_defects
-
-
-
-    # --------------------------------------------------
-    # HEALTH ANALYTICS
-    # --------------------------------------------------
+    # ----------------------------------------------
+    # HEALTH
+    # ----------------------------------------------
 
     health_score = calculate_health_score(
         defects
@@ -294,32 +366,32 @@ if uploaded_file:
 
 
     st.subheader(
-        "📊 Machine Health Intelligence"
+        "📊 Machine Health"
     )
 
 
-    c1,c2,c3,c4 = st.columns(4)
+    a,b,c,d = st.columns(4)
 
 
-    c1.metric(
-        "Health Score",
+    a.metric(
+        "Health",
         f"{health_score}%"
     )
 
 
-    c2.metric(
+    b.metric(
         "Status",
         status
     )
 
 
-    c3.metric(
+    c.metric(
         "Priority",
         priority
     )
 
 
-    c4.metric(
+    d.metric(
         "Defects",
         len(defects)
     )
@@ -332,15 +404,12 @@ if uploaded_file:
 
 
 
-    # --------------------------------------------------
-    # DEFECT DETAILS
-    # --------------------------------------------------
-
-    st.divider()
-
+    # ----------------------------------------------
+    # DEFECTS
+    # ----------------------------------------------
 
     st.subheader(
-        "🚨 Industrial Defects Detected"
+        "🚨 Industrial Defect Analysis"
     )
 
 
@@ -353,62 +422,24 @@ if uploaded_file:
         for defect in defects:
 
 
-            severity = calculate_defect_severity(
-                defect
-            )
-
-
             rows.append(
-
                 {
-
                 "Defect":
                 defect["name"],
-
 
                 "Confidence":
                 f"{defect['confidence']*100:.2f}%",
 
-
                 "Severity":
-                severity
-
+                calculate_defect_severity(defect)
                 }
-
             )
 
 
 
-        df = pd.DataFrame(
-            rows
-        )
-
-
         st.dataframe(
-            df,
-            use_container_width=True
+            pd.DataFrame(rows)
         )
-
-
-    else:
-
-
-        st.success(
-            "No industrial defects detected."
-        )
-
-
-
-    # --------------------------------------------------
-    # CONFIDENCE
-    # --------------------------------------------------
-
-    st.subheader(
-        "📈 Confidence Analytics"
-    )
-
-
-    if defects:
 
 
         chart = pd.DataFrame(
@@ -416,58 +447,48 @@ if uploaded_file:
         )
 
 
-        chart = chart.set_index(
-            "Defect"
+        st.subheader(
+            "📈 Confidence Analytics"
         )
 
 
         st.bar_chart(
-            chart
+            chart.set_index("Defect")
         )
 
 
 
-    # --------------------------------------------------
+    else:
+
+        st.success(
+            "No defects detected."
+        )
+
+
+
+    # ----------------------------------------------
     # SUMMARY
-    # --------------------------------------------------
+    # ----------------------------------------------
 
     st.subheader(
         "📋 Inspection Summary"
     )
 
 
-    summary = generate_inspection_summary(
-        defects,
-        health_score,
-        status,
-        priority
-    )
-
-
     st.json(
-        summary
+        generate_inspection_summary(
+            defects,
+            health_score,
+            status,
+            priority
+        )
     )
 
 
 
-    # --------------------------------------------------
-    # RECOMMENDATION
-    # --------------------------------------------------
-
-    st.subheader(
-        "🔧 AI Maintenance Recommendation"
-    )
-
-
-    st.info(
-        recommendation
-    )
-
-
-
-    # --------------------------------------------------
+    # ----------------------------------------------
     # REPORT
-    # --------------------------------------------------
+    # ----------------------------------------------
 
     pdf = generate_report(
         health_score,
@@ -492,9 +513,8 @@ if uploaded_file:
         "✅ Inspection Completed Successfully"
     )
 
-
 else:
 
     st.info(
-        "Upload machine image to begin inspection."
+        "Select inspection mode and provide machine input."
     )
