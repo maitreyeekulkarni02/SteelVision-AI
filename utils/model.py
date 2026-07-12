@@ -1,49 +1,99 @@
-from ultralytics import YOLO
+import os
 from PIL import Image
-import numpy as np
-import cv2
-import streamlit as st
+from ultralytics import YOLO
 
 
-# Load the model only once
-@st.cache_resource
-def load_model():
-    return YOLO("yolov8n.pt")
+# --------------------------------------------------
+# MODEL PATH
+# --------------------------------------------------
+
+MODEL_PATH = "models/yolov8n.pt"
 
 
-def detect_objects(image):
+# --------------------------------------------------
+# LOAD YOLO MODEL
+# --------------------------------------------------
+
+if not os.path.exists(MODEL_PATH):
+
+    MODEL_PATH = "yolov8n.pt"
+
+
+model = YOLO(MODEL_PATH)
+
+
+
+# --------------------------------------------------
+# DEFECT DETECTION FUNCTION
+# --------------------------------------------------
+
+def detect_defects(image):
+
     """
-    Run YOLO detection on the uploaded image.
+    Runs YOLO inference on uploaded machine image.
+
     Returns:
-        annotated_image
-        detections (list)
+
+    {
+        image: annotated image,
+        defects: [
+            {
+                name:"",
+                confidence:""
+            }
+        ]
+    }
+
     """
 
-    model = load_model()
+    results = model(image)
 
-    image_np = np.array(image)
 
-    results = model(image_np)
+    defects = []
 
-    annotated = results[0].plot()
 
-    annotated = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
+    annotated_image = image.copy()
 
-    detections = []
 
-    for box in results[0].boxes:
 
-        cls = int(box.cls[0])
+    for result in results:
 
-        confidence = float(box.conf[0])
 
-        class_name = model.names[cls]
+        annotated_image = result.plot()
 
-        detections.append(
-            {
-                "class": class_name,
-                "confidence": round(confidence * 100, 2),
-            }
-        )
 
-    return Image.fromarray(annotated), detections
+        boxes = result.boxes
+
+
+        for box in boxes:
+
+
+            confidence = float(
+                box.conf[0]
+            )
+
+
+            class_id = int(
+                box.cls[0]
+            )
+
+
+            class_name = model.names[class_id]
+
+
+            defects.append(
+                {
+                    "name": class_name,
+                    "confidence": confidence
+                }
+            )
+
+
+
+    return {
+
+        "image": annotated_image,
+
+        "defects": defects
+
+    }

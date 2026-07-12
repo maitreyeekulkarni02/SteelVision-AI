@@ -1,0 +1,74 @@
+/* =======================================
+   SteelVision AI Theme
+======================================= */
+
+.main {
+    background-color: #F4F7FB;
+}
+
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Headings */
+
+h1 {
+    color: #0B3C5D;
+    font-weight: 700;
+}
+
+h2 {
+    color: #0B3C5D;
+}
+
+h3 {
+    color: #0B3C5D;
+}
+
+/* KPI Card */
+
+.metric-card {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    text-align: center;
+}
+
+/* Recommendation */
+
+.recommendation-card {
+    background: #ffffff;
+    border-left: 6px solid #0B3C5D;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.08);
+}
+
+/* Success */
+
+.success-card {
+    background: #E8F5E9;
+    border-left: 6px solid #28A745;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* Sidebar */
+
+section[data-testid="stSidebar"] {
+    background-color: #0B3C5D;
+}
+
+section[data-testid="stSidebar"] * {
+    color: white;
+}
+
+/* Footer */
+
+.footer {
+    text-align: center;
+    color: gray;
+    margin-top: 40px;
+}

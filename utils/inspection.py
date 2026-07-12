@@ -1,107 +1,201 @@
-from collections import Counter
+"""
+SteelVision AI
+Inspection Intelligence Engine
 
-# Defect classes that your future custom YOLO model will use
-CRITICAL_DEFECTS = {
-    "crack",
-    "oil_leakage",
-    "missing_component",
-}
-
-MODERATE_DEFECTS = {
-    "rust",
-    "corrosion",
-    "damaged_belt",
-}
-
-MINOR_DEFECTS = {
-    "surface_damage",
-    "loose_bolt",
-}
+Handles:
+- Machine health calculation
+- Status classification
+- Maintenance priority
+- Recommendations
+"""
 
 
-def calculate_health(defects):
+# --------------------------------------------------
+# HEALTH SCORE CALCULATION
+# --------------------------------------------------
+
+def calculate_health_score(defects):
+
     """
-    Calculate machine health score.
+    Calculate machine health score
+    based on detected defects.
     """
-    if len(defects) == 0:
+
+
+    if not defects:
+
         return 100
 
-    critical = sum(1 for d in defects if d in CRITICAL_DEFECTS)
 
-    if critical >= 2:
+
+    defect_count = len(defects)
+
+
+
+    critical_keywords = [
+
+        "crack",
+        "oil",
+        "leak",
+        "corrosion",
+        "damage"
+
+    ]
+
+
+    critical_count = 0
+
+
+
+    for defect in defects:
+
+        name = defect["name"].lower()
+
+
+        for keyword in critical_keywords:
+
+            if keyword in name:
+
+                critical_count += 1
+
+                break
+
+
+
+    # Health rules
+
+    if critical_count >= 3:
+
         return 20
 
-    if critical == 1:
+
+    elif critical_count == 2:
+
         return 40
 
-    if len(defects) >= 3:
+
+    elif defect_count >= 3:
+
         return 60
 
-    if len(defects) == 2:
+
+    elif defect_count == 2:
+
         return 75
 
-    return 90
+
+    else:
+
+        return 90
 
 
-def machine_status(score):
+
+
+# --------------------------------------------------
+# MACHINE STATUS
+# --------------------------------------------------
+
+def get_machine_status(score):
+
     if score >= 90:
+
         return "Excellent"
 
-    if score >= 75:
+
+    elif score >= 75:
+
         return "Good"
 
-    if score >= 60:
+
+    elif score >= 50:
+
         return "Moderate"
 
-    return "Critical"
+
+    else:
+
+        return "Critical"
 
 
-def maintenance_priority(score):
+
+
+
+# --------------------------------------------------
+# MAINTENANCE PRIORITY
+# --------------------------------------------------
+
+def get_priority(score):
+
+
     if score >= 90:
+
         return "Low"
 
-    if score >= 75:
+
+
+    elif score >= 75:
+
         return "Medium"
 
-    if score >= 60:
+
+
+    elif score >= 50:
+
         return "High"
 
-    return "Critical"
 
 
-def recommendation(defects):
-    if len(defects) == 0:
+    else:
+
+        return "Critical"
+
+
+
+
+
+# --------------------------------------------------
+# RECOMMENDATION ENGINE
+# --------------------------------------------------
+
+def get_recommendation(defects):
+
+
+    if not defects:
+
         return (
-            "No visible defects detected. Continue routine preventive maintenance."
+            "Machine condition is healthy. "
+            "Continue regular preventive maintenance schedule."
         )
 
-    rec = []
 
-    if "rust" in defects:
-        rec.append("Remove rust and apply anti-corrosion coating.")
 
-    if "corrosion" in defects:
-        rec.append("Inspect affected components and replace if necessary.")
+    defect_names = []
 
-    if "crack" in defects:
-        rec.append("Immediately inspect structural integrity.")
 
-    if "oil_leakage" in defects:
-        rec.append("Repair leakage and inspect seals.")
+    for defect in defects:
 
-    if "loose_bolt" in defects:
-        rec.append("Tighten all loose fasteners.")
+        defect_names.append(
+            defect["name"]
+        )
 
-    if "damaged_belt" in defects:
-        rec.append("Replace damaged belt.")
 
-    if "missing_component" in defects:
-        rec.append("Install missing component before operation.")
 
-    if "surface_damage" in defects:
-        rec.append("Monitor damaged surface during next inspection.")
+    defects_text = ", ".join(
+        defect_names
+    )
 
-    if len(rec) == 0:
-        rec.append("Perform manual inspection.")
 
-    return "\n".join(f"• {r}" for r in rec)
+
+    return f"""
+Detected issues:
+
+{defects_text}
+
+
+Recommended Actions:
+
+• Schedule maintenance inspection
+• Check affected machine components
+• Perform detailed quality analysis
+• Monitor machine health continuously
+"""
