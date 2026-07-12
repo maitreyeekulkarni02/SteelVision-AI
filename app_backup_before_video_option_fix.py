@@ -392,8 +392,7 @@ mode = st.radio(
 
     [
         "Upload Image",
-        "Live Camera",
-        "Real-Time Video Inspection"
+        "Live Camera"
     ]
 
 )
