@@ -55,7 +55,7 @@ from utils.machine_manager import (
 
 st.set_page_config(
     page_title="SteelVision AI",
-    page_icon="",
+    page_icon="??",
     layout="wide"
 )
 
@@ -149,7 +149,7 @@ if page == "Inspection History":
 
 
     st.title(
-        " Inspection History"
+        "?? Inspection History"
     )
 
 
@@ -193,7 +193,7 @@ if page == "Machine Records":
 
 
     st.title(
-        " Machine Records"
+        "?? Machine Records"
     )
 
 
@@ -288,23 +288,23 @@ if page == "Edge AI Workflow":
 """
 Industrial Camera
 
-        |
+        ?
 
 Edge Device
 
-        |
+        ?
 
 YOLO Vision Model
 
-        |
+        ?
 
 Industrial Defect Engine
 
-        |
+        ?
 
 Machine Health Intelligence
 
-        |
+        ?
 
 Maintenance Recommendation
 """
@@ -436,7 +436,7 @@ else:
 
 
     st.info(
-        " Edge Camera Mode"
+        "?? Edge Camera Mode"
     )
 
 
@@ -635,7 +635,7 @@ if image:
 
     st.subheader(
 
-        " Industrial Defect Analysis"
+        "?? Industrial Defect Analysis"
 
     )
 
@@ -691,7 +691,7 @@ if image:
 
         st.subheader(
 
-            " Confidence Analytics"
+            "?? Confidence Analytics"
 
         )
 
@@ -733,7 +733,7 @@ if image:
 
     st.subheader(
 
-        " Inspection Summary"
+        "?? Inspection Summary"
 
     )
 
@@ -763,7 +763,7 @@ if image:
 
     st.subheader(
 
-        " Maintenance Recommendation"
+        "?? Maintenance Recommendation"
 
     )
 
@@ -798,7 +798,7 @@ if image:
 
     st.download_button(
 
-        " Download Inspection Report",
+        "?? Download Inspection Report",
 
         pdf,
 
@@ -814,7 +814,7 @@ if image:
 
     st.success(
 
-        "INSPECTION COMPLETED SUCCESSFULLY"
+        "? Inspection Completed Successfully"
 
     )
 

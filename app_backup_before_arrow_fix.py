@@ -288,23 +288,23 @@ if page == "Edge AI Workflow":
 """
 Industrial Camera
 
-        |
+        ?
 
 Edge Device
 
-        |
+        ?
 
 YOLO Vision Model
 
-        |
+        ?
 
 Industrial Defect Engine
 
-        |
+        ?
 
 Machine Health Intelligence
 
-        |
+        ?
 
 Maintenance Recommendation
 """
@@ -814,7 +814,7 @@ if image:
 
     st.success(
 
-        "INSPECTION COMPLETED SUCCESSFULLY"
+        "? Inspection Completed Successfully"
 
     )
 

@@ -55,7 +55,7 @@ from utils.machine_manager import (
 
 st.set_page_config(
     page_title="SteelVision AI",
-    page_icon="",
+    page_icon="S"??",
     layout="wide"
 )
 
@@ -149,7 +149,7 @@ if page == "Inspection History":
 
 
     st.title(
-        " Inspection History"
+        "??"INSPECTION HISTORY"
     )
 
 
@@ -193,7 +193,7 @@ if page == "Machine Records":
 
 
     st.title(
-        " Machine Records"
+        "??"MACHINE RECORDS"
     )
 
 
@@ -436,7 +436,7 @@ else:
 
 
     st.info(
-        " Edge Camera Mode"
+        "??"EDGE CAMERA MODE"
     )
 
 
@@ -635,7 +635,7 @@ if image:
 
     st.subheader(
 
-        " Industrial Defect Analysis"
+        "??"INDUSTRIAL DEFECT ANALYSIS"
 
     )
 
@@ -691,7 +691,7 @@ if image:
 
         st.subheader(
 
-            " Confidence Analytics"
+            "??"CONFIDENCE ANALYTICS"
 
         )
 
@@ -733,7 +733,7 @@ if image:
 
     st.subheader(
 
-        " Inspection Summary"
+        "??"INSPECTION SUMMARY"
 
     )
 
@@ -763,7 +763,7 @@ if image:
 
     st.subheader(
 
-        " Maintenance Recommendation"
+        "??"MAINTENANCE RECOMMENDATION"
 
     )
 
@@ -798,7 +798,7 @@ if image:
 
     st.download_button(
 
-        " Download Inspection Report",
+        "??"DOWNLOAD INSPECTION REPORT",
 
         pdf,
 
