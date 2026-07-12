@@ -1,21 +1,16 @@
-# ==========================
-# Virtual Environment
-# ==========================
-.venv/
+# Database
+*.db
 
-# Python Cache
+# Python cache
 __pycache__/
-*.py[cod]
+*.pyc
+
+# Virtual Environment
+.venv/
 
 # VS Code
 .vscode/
 
-# Streamlit
-.streamlit/
-
-# OS Files
-Thumbs.db
-.DS_Store
-
-# Git
-.git/
+# Backup Files
+app_backup*
+*backup*.py
