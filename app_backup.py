@@ -3,8 +3,10 @@ from PIL import Image
 import os
 from datetime import datetime
 import pandas as pd
+import time
 
 from utils.model import detect_defects
+
 from utils.camera import get_camera_frame
 
 from utils.defect_engine import (
@@ -26,17 +28,11 @@ from utils.analytics import (
 
 from utils.report import generate_report
 
-from utils.dashboard import (
-    display_machine_metrics,
-    display_status_panel,
-    display_edge_status
-)
 
 
-
-# -------------------------------
+# --------------------------------------------------
 # PAGE CONFIG
-# -------------------------------
+# --------------------------------------------------
 
 st.set_page_config(
     page_title="SteelVision AI",
@@ -46,9 +42,9 @@ st.set_page_config(
 
 
 
-# -------------------------------
-# LOAD STYLE
-# -------------------------------
+# --------------------------------------------------
+# CSS
+# --------------------------------------------------
 
 if os.path.exists("styles/style.css"):
 
@@ -61,9 +57,9 @@ if os.path.exists("styles/style.css"):
 
 
 
-# -------------------------------
+# --------------------------------------------------
 # SIDEBAR
-# -------------------------------
+# --------------------------------------------------
 
 with st.sidebar:
 
@@ -86,9 +82,9 @@ with st.sidebar:
 
 
 
-# -------------------------------
+# --------------------------------------------------
 # HEADER
-# -------------------------------
+# --------------------------------------------------
 
 st.markdown(
 """
@@ -99,11 +95,12 @@ st.markdown(
 </h1>
 
 <h3>
-AI Powered Predictive Maintenance
+Real-Time Edge AI Machine Inspection
 </h3>
 
 <p>
-Computer Vision + Edge AI for Industry 4.0
+Computer Vision powered predictive maintenance
+for Industry 4.0.
 </p>
 
 </div>
@@ -113,9 +110,9 @@ unsafe_allow_html=True
 
 
 
-# -------------------------------
-# WORKFLOW
-# -------------------------------
+# --------------------------------------------------
+# WORKFLOW PAGE
+# --------------------------------------------------
 
 if page == "Edge AI Workflow":
 
@@ -130,19 +127,18 @@ Industrial Camera
 Edge Device
 |
 ↓
-YOLO Vision Model
+YOLO Vision Engine
 |
 ↓
-Industrial Defect Engine
+Industrial Defect AI
 |
 ↓
-Machine Health Intelligence
+Machine Health Score
 |
 ↓
-Maintenance Recommendation
+Maintenance Action
 
-
-Production Architecture:
+Production Stack:
 
 Frontend:
 React
@@ -165,13 +161,14 @@ Docker + Edge Hardware
 """
 )
 
+
     st.stop()
 
 
 
-# -------------------------------
+# --------------------------------------------------
 # ABOUT
-# -------------------------------
+# --------------------------------------------------
 
 if page == "About":
 
@@ -179,10 +176,9 @@ if page == "About":
 
     st.write(
 """
-SteelVision AI is an Industry 4.0
-inspection platform that detects machine
-defects and provides predictive maintenance
-recommendations.
+SteelVision AI is an affordable Edge AI
+inspection platform designed for factories
+to detect defects and reduce machine downtime.
 """
 )
 
@@ -190,9 +186,9 @@ recommendations.
 
 
 
-# -------------------------------
+# --------------------------------------------------
 # DASHBOARD
-# -------------------------------
+# --------------------------------------------------
 
 st.subheader(
 "🔍 Machine Inspection Dashboard"
@@ -214,7 +210,12 @@ image = None
 
 
 
+# --------------------------------------------------
+# IMAGE MODE
+# --------------------------------------------------
+
 if mode == "Upload Image":
+
 
     uploaded_file = st.file_uploader(
         "Upload Machine Image",
@@ -234,24 +235,57 @@ if mode == "Upload Image":
 
 
 
+# --------------------------------------------------
+# CAMERA MODE
+# --------------------------------------------------
+
 else:
 
+
     st.info(
-        "📷 Edge Camera Mode"
+        "📷 Edge Camera Mode Activated"
     )
 
 
     if st.button(
-        "Capture Frame"
+        "Capture Inspection Frame"
     ):
+
+
+        start = time.time()
+
 
         image = get_camera_frame()
 
 
+        end = time.time()
 
-# -------------------------------
-# AI PIPELINE
-# -------------------------------
+
+        if image:
+
+
+            fps = round(
+                1/(end-start),
+                2
+            )
+
+
+            st.success(
+                f"Camera frame captured | FPS: {fps}"
+            )
+
+
+        else:
+
+            st.error(
+                "Camera not available"
+            )
+
+
+
+# --------------------------------------------------
+# AI INSPECTION PIPELINE
+# --------------------------------------------------
 
 if image:
 
@@ -274,7 +308,7 @@ if image:
 
 
     with st.spinner(
-        "Running Edge AI inspection..."
+        "⚡ Edge AI analysing..."
     ):
 
 
@@ -292,8 +326,9 @@ if image:
     with col2:
 
         st.subheader(
-            "AI Detection"
+            "AI Detection Result"
         )
+
 
         st.image(
             yolo_result["image"],
@@ -301,6 +336,10 @@ if image:
         )
 
 
+
+    # ----------------------------------------------
+    # HEALTH
+    # ----------------------------------------------
 
     health_score = calculate_health_score(
         defects
@@ -323,35 +362,51 @@ if image:
 
 
 
-    # -------------------------------
-    # INDUSTRIAL DASHBOARD
-    # -------------------------------
-
     st.divider()
 
-    display_machine_metrics(
-        health_score,
-        status,
-        priority,
-        len(defects)
+
+    st.subheader(
+        "📊 Machine Health"
     )
 
 
-    display_status_panel(
-        health_score,
+    a,b,c,d = st.columns(4)
+
+
+    a.metric(
+        "Health",
+        f"{health_score}%"
+    )
+
+
+    b.metric(
+        "Status",
         status
     )
 
 
-    display_edge_status()
+    c.metric(
+        "Priority",
+        priority
+    )
+
+
+    d.metric(
+        "Defects",
+        len(defects)
+    )
 
 
 
-    # -------------------------------
-    # DEFECT ANALYSIS
-    # -------------------------------
+    st.progress(
+        health_score/100
+    )
 
-    st.divider()
+
+
+    # ----------------------------------------------
+    # DEFECTS
+    # ----------------------------------------------
 
     st.subheader(
         "🚨 Industrial Defect Analysis"
@@ -360,13 +415,15 @@ if image:
 
     if defects:
 
+
         rows=[]
 
 
         for defect in defects:
 
+
             rows.append(
-            {
+                {
                 "Defect":
                 defect["name"],
 
@@ -375,22 +432,13 @@ if image:
 
                 "Severity":
                 calculate_defect_severity(defect)
-            }
+                }
             )
 
 
-        df = pd.DataFrame(
-            rows
-        )
-
 
         st.dataframe(
-            df
-        )
-
-
-        st.subheader(
-            "📈 Confidence Analytics"
+            pd.DataFrame(rows)
         )
 
 
@@ -399,9 +447,15 @@ if image:
         )
 
 
+        st.subheader(
+            "📈 Confidence Analytics"
+        )
+
+
         st.bar_chart(
             chart.set_index("Defect")
         )
+
 
 
     else:
@@ -412,11 +466,9 @@ if image:
 
 
 
-    # -------------------------------
+    # ----------------------------------------------
     # SUMMARY
-    # -------------------------------
-
-    st.divider()
+    # ----------------------------------------------
 
     st.subheader(
         "📋 Inspection Summary"
@@ -434,24 +486,9 @@ if image:
 
 
 
-    # -------------------------------
-    # RECOMMENDATION
-    # -------------------------------
-
-    st.subheader(
-        "🔧 Maintenance Recommendation"
-    )
-
-
-    st.info(
-        recommendation
-    )
-
-
-
-    # -------------------------------
+    # ----------------------------------------------
     # REPORT
-    # -------------------------------
+    # ----------------------------------------------
 
     pdf = generate_report(
         health_score,
@@ -471,13 +508,13 @@ if image:
     )
 
 
+
     st.success(
         "✅ Inspection Completed Successfully"
     )
 
-
 else:
 
     st.info(
-        "Upload image or capture camera frame."
+        "Select inspection mode and provide machine input."
     )
