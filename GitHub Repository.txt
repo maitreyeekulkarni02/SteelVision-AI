@@ -1,0 +1,83 @@
+
+SteelVision AI
+
+
+
+GitHub Repository
+
+
+
+https://github.com/maitreyeekulkarni02/SteelVision-AI-mvp 
+
+
+
+Project Overview
+
+
+
+SteelVision AI is an Edge AI-powered industrial inspection platform developed for Tata Technologies Innovent 2026.
+
+
+
+Current Features
+
+
+
+• AI-powered defect detection
+
+• Image inspection
+
+• Live camera inspection
+
+• Machine Health Score
+
+• Machine Status Classification
+
+• Maintenance Priority
+
+• AI Maintenance Recommendation
+
+• Industrial Dashboard
+
+• Inspection History
+
+• Machine Records
+
+• PDF Report Generation
+
+• Analytics Dashboard
+
+
+
+Technology Stack
+
+
+
+Frontend: Streamlit
+
+Backend: Python
+
+AI: YOLOv8
+
+Database: SQLite
+
+
+
+Future Scope
+
+
+
+• Raspberry Pi deployment
+
+• QR machine identification
+
+• Multi-machine monitoring
+
+• Predictive maintenance
+
+• Temperature & vibration sensors
+
+• Cloud synchronization
+
+• Admin dashboard
+

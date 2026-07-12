@@ -1,0 +1,34 @@
+SteelVision AI
+Project Status
+
+Current Version:
+MVP (Minimum Viable Product)
+
+Completion:
+Approximately 75%
+
+Implemented Features:
+• AI-powered defect detection
+• Image inspection
+• Live camera inspection
+• Machine Health Score
+• Machine Status Classification
+• Maintenance Recommendations
+• Industrial Dashboard
+• Inspection History
+• Machine Records
+• PDF Report Generation
+• Analytics Dashboard
+
+Upcoming Features:
+• Raspberry Pi deployment
+• QR machine identification
+• Temperature, vibration, and acoustic sensor integration
+• Cloud synchronization
+• Multi-machine monitoring
+• Predictive maintenance
+• Notifications
+• Admin panel
+
+Developed for:
+Tata Technologies Innovent 2026
