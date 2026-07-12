@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 
 from utils.model import detect_defects
+
 from utils.inspection import (
     calculate_health_score,
     get_machine_status,
@@ -11,33 +12,37 @@ from utils.inspection import (
     get_recommendation
 )
 
-import config
+from utils.report import generate_report
+
 
 
 # --------------------------------------------------
-# PAGE CONFIGURATION
+# PAGE CONFIG
 # --------------------------------------------------
 
 st.set_page_config(
     page_title="SteelVision AI",
     page_icon="🏭",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
+
 
 
 # --------------------------------------------------
 # LOAD CSS
 # --------------------------------------------------
 
-css_path = os.path.join("styles", "style.css")
+css_path = "styles/style.css"
 
 if os.path.exists(css_path):
+
     with open(css_path) as f:
+
         st.markdown(
             f"<style>{f.read()}</style>",
             unsafe_allow_html=True
         )
+
 
 
 # --------------------------------------------------
@@ -46,38 +51,22 @@ if os.path.exists(css_path):
 
 with st.sidebar:
 
-    st.image(
-        "https://cdn-icons-png.flaticon.com/512/2920/2920277.png",
-        width=100
-    )
-
-    st.title("SteelVision AI")
+    st.title("🏭 SteelVision AI")
 
     st.caption(
-        "Edge AI Powered Industrial Inspection Platform"
+        "Edge AI Industrial Inspection Platform"
     )
 
     st.divider()
 
-    menu = st.radio(
+
+    page = st.radio(
         "Navigation",
         [
             "Inspection Dashboard",
             "System Architecture",
-            "About SteelVision AI"
+            "About"
         ]
-    )
-
-    st.divider()
-
-    st.info(
-        """
-        Industry 4.0 Solution
-
-        AI Computer Vision
-        Predictive Maintenance
-        Edge Intelligence
-        """
     )
 
 
@@ -89,15 +78,17 @@ st.markdown(
     """
     <div class="header-card">
 
-    <h1>🏭 SteelVision AI</h1>
+    <h1>
+    🏭 SteelVision AI
+    </h1>
 
     <h3>
-    Intelligent Machine Inspection using Computer Vision
+    AI Powered Machine Health Monitoring
     </h3>
 
     <p>
-    Detect industrial defects, calculate machine health,
-    and generate maintenance recommendations using AI.
+    Detect defects, analyze machine condition,
+    and generate predictive maintenance insights.
     </p>
 
     </div>
@@ -106,48 +97,52 @@ st.markdown(
 )
 
 
+
 # --------------------------------------------------
-# SYSTEM ARCHITECTURE PAGE
+# ARCHITECTURE PAGE
 # --------------------------------------------------
 
-if menu == "System Architecture":
+if page == "System Architecture":
 
-    st.title("⚙️ SteelVision AI Architecture")
+    st.title("⚙️ Edge AI Architecture")
 
-    st.markdown(
+
+    st.write(
         """
-        ### Edge AI Inspection Workflow
-
-        📷 Machine Camera / Smartphone Camera
+        Camera / Smartphone Input
 
         ↓
 
-        🤖 YOLO Computer Vision Model
+        Edge Device
 
         ↓
 
-        🔍 Defect Detection
+        YOLO Computer Vision Model
 
         ↓
 
-        📊 Health Score Calculation
+        Defect Detection
 
         ↓
 
-        🛠 Predictive Maintenance Recommendation
+        Machine Health Intelligence
+
+        ↓
+
+        Maintenance Recommendation
 
 
-        ### Production Roadmap
+        Production Roadmap:
 
         Frontend:
-        React + TypeScript
+        React
 
 
         Backend:
         FastAPI
 
 
-        AI Engine:
+        AI:
         Custom YOLO Model
 
 
@@ -160,6 +155,7 @@ if menu == "System Architecture":
         """
     )
 
+
     st.stop()
 
 
@@ -168,17 +164,19 @@ if menu == "System Architecture":
 # ABOUT PAGE
 # --------------------------------------------------
 
-if menu == "About SteelVision AI":
+if page == "About":
 
     st.title("About SteelVision AI")
 
+
     st.write(
         """
-        SteelVision AI is an Industry 4.0 computer vision platform
-        designed to reduce machine downtime by detecting defects
-        early and providing actionable maintenance insights.
+        SteelVision AI is an Industry 4.0 solution
+        that uses Computer Vision and Edge AI
+        to detect machine defects and reduce downtime.
         """
     )
+
 
     st.stop()
 
@@ -188,11 +186,14 @@ if menu == "About SteelVision AI":
 # INSPECTION DASHBOARD
 # --------------------------------------------------
 
-st.subheader("🔍 Machine Inspection Dashboard")
+st.subheader(
+    "🔍 Machine Inspection"
+)
+
 
 
 uploaded_file = st.file_uploader(
-    "Upload Machine Image",
+    "Upload machine image",
     type=[
         "jpg",
         "jpeg",
@@ -208,32 +209,32 @@ if uploaded_file:
     image = Image.open(uploaded_file)
 
 
+
     col1, col2 = st.columns(2)
 
 
 
     with col1:
 
-        st.markdown(
-            "### Original Machine Image"
+        st.subheader(
+            "Original Image"
         )
 
         st.image(
             image,
-            use_container_width=True
+            width="stretch"
         )
 
 
 
-    # ----------------------------------------------
-    # AI INFERENCE
-    # ----------------------------------------------
-
     with st.spinner(
-        "Running AI defect detection..."
+        "AI analysing machine..."
     ):
 
-        result = detect_defects(image)
+        result = detect_defects(
+            image
+        )
+
 
 
     detected_image = result["image"]
@@ -244,18 +245,14 @@ if uploaded_file:
 
     with col2:
 
-        st.markdown(
-            "### AI Detection Result"
+        st.subheader(
+            "AI Detection"
         )
 
         st.image(
             detected_image,
-            use_container_width=True
+            width="stretch"
         )
-
-
-
-    st.divider()
 
 
 
@@ -263,15 +260,12 @@ if uploaded_file:
     # ANALYTICS
     # ----------------------------------------------
 
-    defect_count = len(defects)
-
-
     health_score = calculate_health_score(
         defects
     )
 
 
-    machine_status = get_machine_status(
+    status = get_machine_status(
         health_score
     )
 
@@ -287,55 +281,46 @@ if uploaded_file:
 
 
 
+    st.divider()
+
+
     st.subheader(
         "📊 Machine Health Analytics"
     )
 
 
-    c1, c2, c3, c4 = st.columns(4)
+
+    c1,c2,c3,c4 = st.columns(4)
 
 
-    with c1:
-
-        st.metric(
-            "Machine Health",
-            f"{health_score}%"
-        )
-
-
-    with c2:
-
-        st.metric(
-            "Status",
-            machine_status
-        )
-
-
-    with c3:
-
-        st.metric(
-            "Maintenance Priority",
-            priority
-        )
-
-
-    with c4:
-
-        st.metric(
-            "Defects Found",
-            defect_count
-        )
-
-
-
-    # Health Progress
-
-    st.progress(
-        health_score / 100
+    c1.metric(
+        "Health Score",
+        f"{health_score}%"
     )
 
 
-    st.divider()
+    c2.metric(
+        "Status",
+        status
+    )
+
+
+    c3.metric(
+        "Priority",
+        priority
+    )
+
+
+    c4.metric(
+        "Defects",
+        len(defects)
+    )
+
+
+
+    st.progress(
+        health_score/100
+    )
 
 
 
@@ -344,17 +329,17 @@ if uploaded_file:
     # ----------------------------------------------
 
     st.subheader(
-        "🛠 Detection Summary"
+        "Detected Defects"
     )
 
 
     if defects:
 
+
         for defect in defects:
 
             st.warning(
                 f"""
-                Defect:
                 {defect['name']}
 
                 Confidence:
@@ -365,8 +350,9 @@ if uploaded_file:
 
     else:
 
+
         st.success(
-            "No defects detected. Machine condition looks healthy."
+            "No defects detected."
         )
 
 
@@ -376,19 +362,49 @@ if uploaded_file:
     # ----------------------------------------------
 
     st.subheader(
-        "🔧 Maintenance Recommendation"
+        "🔧 AI Maintenance Recommendation"
     )
 
 
-    st.markdown(
-        f"""
-        <div class="recommendation-card">
+    st.info(
+        recommendation
+    )
 
-        {recommendation}
 
-        </div>
-        """,
-        unsafe_allow_html=True
+
+    # ----------------------------------------------
+    # PDF REPORT
+    # ----------------------------------------------
+
+    st.divider()
+
+
+    st.subheader(
+        "📄 Inspection Report"
+    )
+
+
+    pdf = generate_report(
+        health_score,
+        status,
+        priority,
+        defects,
+        recommendation
+    )
+
+
+
+    st.download_button(
+
+        label="Download PDF Report",
+
+        data=pdf,
+
+        file_name=
+        f"SteelVision_Report_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf",
+
+        mime="application/pdf"
+
     )
 
 
@@ -399,45 +415,13 @@ if uploaded_file:
 
 
 
-    # ----------------------------------------------
-    # REPORT PREVIEW
-    # ----------------------------------------------
-
-    st.divider()
-
-    st.subheader(
-        "📄 Inspection Report Preview"
-    )
-
-
-    st.write(
-        {
-            "Date":
-            datetime.now().strftime(
-                "%d-%m-%Y %H:%M"
-            ),
-
-            "Defects":
-            defect_count,
-
-            "Health Score":
-            f"{health_score}%",
-
-            "Status":
-            machine_status,
-
-            "Priority":
-            priority
-        }
-    )
-
-
-
 else:
 
+
     st.info(
-        "Upload a machine image to start AI inspection."
+        "Upload machine image to start inspection."
     )
+
 
 
 # --------------------------------------------------
@@ -446,15 +430,9 @@ else:
 
 st.markdown(
     """
-    <br>
-
     <center>
-
-    SteelVision AI |
-    Industry 4.0 Edge AI Inspection Platform
-
+    SteelVision AI | Industry 4.0 Edge AI Platform
     </center>
-
     """,
     unsafe_allow_html=True
 )
