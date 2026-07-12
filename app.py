@@ -8,6 +8,7 @@ import pandas as pd
 from utils.model import detect_defects
 from utils.camera import get_camera_frame
 from utils.video_inspection import start_video_inspection
+from utils.history import save_inspection, get_history
 
 from utils.defect_engine import (
     generate_industrial_defects
@@ -157,7 +158,7 @@ if page == "Inspection History":
     records = get_history()
 
 
-    if records:
+    if not records.empty:
 
 
         history = format_history(
@@ -459,6 +460,12 @@ else:
 # =====================================
 # AI PIPELINE
 # =====================================
+
+
+machine_id = st.text_input(
+    "Machine ID",
+    "MACHINE_001"
+)
 
 
 if image:
@@ -816,8 +823,14 @@ if image:
         mime="application/pdf"
 
     )
-
-
+    
+    save_inspection(
+    machine_id,
+    defects,
+    health_score,
+    status,
+    priority
+    )
 
     st.success(
 

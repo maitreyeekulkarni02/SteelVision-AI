@@ -44,20 +44,18 @@ def create_table():
 
 
 
-
 def save_inspection(
-    machine_name,
-    defects,
-    health_score,
-    status,
-    priority,
-    recommendation=None
+        machine_id,
+        defects,
+        health_score,
+        status,
+        priority
 ):
 
-    create_table()
-
     conn = sqlite3.connect(DB_NAME)
+
     cursor = conn.cursor()
+
 
     cursor.execute(
         """
@@ -71,21 +69,29 @@ def save_inspection(
             machine_status,
             maintenance_priority
         )
+
         VALUES (?,?,?,?,?,?,?)
         """,
+
         (
-            machine_name,
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            machine_id,
+            datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            ),
             str(defects),
             len(defects),
             health_score,
             status,
             priority
         )
+
     )
 
+
     conn.commit()
+
     conn.close()
+
 
 
 def get_history():
