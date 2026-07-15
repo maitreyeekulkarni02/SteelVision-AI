@@ -1,74 +1,106 @@
-/* =======================================
-   SteelVision AI Theme
-======================================= */
 
-.main {
-    background-color: #F4F7FB;
+/* SteelVision AI Industrial Theme */
+
+
+body {
+
+    background-color:#0b1120;
+
 }
 
-.block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+
+/* Main Header */
+
+.header-card {
+
+    background:
+    linear-gradient(
+        135deg,
+        #111827,
+        #1f2937
+    );
+
+
+    padding:30px;
+
+    border-radius:15px;
+
+    border:1px solid #374151;
+
+    margin-bottom:25px;
+
 }
 
-/* Headings */
 
-h1 {
-    color: #0B3C5D;
-    font-weight: 700;
+
+.header-card h3 {
+
+    color:#60a5fa;
+
 }
 
-h2 {
-    color: #0B3C5D;
+
+
+.header-card p {
+
+    color:#d1d5db;
+
 }
 
-h3 {
-    color: #0B3C5D;
+
+
+/* Metric Cards */
+
+div[data-testid="metric-container"] {
+
+
+    background:#111827;
+
+
+    border-radius:15px;
+
+
+    padding:15px;
+
+
+    border:
+
+    1px solid #374151;
+
+
 }
 
-/* KPI Card */
 
-.metric-card {
-    background: white;
-    border-radius: 14px;
-    padding: 18px;
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
-    text-align: center;
-}
-
-/* Recommendation */
-
-.recommendation-card {
-    background: #ffffff;
-    border-left: 6px solid #0B3C5D;
-    border-radius: 12px;
-    padding: 18px;
-    box-shadow: 0 4px 10px rgba(0,0,0,.08);
-}
-
-/* Success */
-
-.success-card {
-    background: #E8F5E9;
-    border-left: 6px solid #28A745;
-    padding: 15px;
-    border-radius: 10px;
-}
 
 /* Sidebar */
 
 section[data-testid="stSidebar"] {
-    background-color: #0B3C5D;
+
+
+    background:#020617;
+
 }
 
-section[data-testid="stSidebar"] * {
-    color: white;
+
+
+/* Buttons */
+
+button {
+
+
+    border-radius:10px !important;
+
+
 }
 
-/* Footer */
 
-.footer {
-    text-align: center;
-    color: gray;
-    margin-top: 40px;
+/* Alerts */
+
+.stAlert {
+
+
+    border-radius:12px;
+
+
 }
+

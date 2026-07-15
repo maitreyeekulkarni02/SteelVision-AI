@@ -1,0 +1,49 @@
+import os
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
+from PIL import Image
+
+from app_pages.about import show_about
+from app_pages.history import show_history
+from database.database import Base, engine
+from ui.analytics_dashboard import show_analytics_dashboard
+from ui.command_center import show_command_center
+from ui.copilot_panel import show_copilot
+from ui.factory_twin import show_factory_twin
+from ui.maintenance_panel import show_maintenance_plan
+from utils.analytics import (
+    calculate_defect_severity,
+    generate_inspection_summary,
+    get_confidence_data,
+)
+from utils.camera import get_camera_frame
+from utils.dashboard import (
+    display_edge_status,
+    display_machine_metrics,
+    display_status_panel,
+)
+from utils.defect_engine import generate_industrial_defects
+from utils.history import (
+    format_history,
+    get_history,
+    save_inspection,
+)
+from utils.inspection import (
+    calculate_health_score,
+    get_machine_status,
+    get_priority,
+    get_recommendation,
+)
+from utils.machine_manager import (
+    get_machines,
+    update_machine_health,
+)
+from utils.maintenance_planner import generate_maintenance_plan
+from utils.model import detect_defects
+from utils.report import generate_report
+from utils.video_inspection import start_video_inspection
+
+Base.metadata.create_all(bind=engine)

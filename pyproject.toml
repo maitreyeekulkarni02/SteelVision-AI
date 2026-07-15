@@ -1,0 +1,17 @@
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+extend-exclude = '''
+(
+    ^\.venv/
+  | .*_backup\.py$
+)
+'''
+
+[tool.isort]
+profile = "black"
+skip_glob = [
+    ".venv/*",
+    "*_backup.py",
+]
+

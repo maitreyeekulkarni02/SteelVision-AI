@@ -1,66 +1,48 @@
-﻿import streamlit as st
-from PIL import Image
 import os
 from datetime import datetime
+from pathlib import Path
+
 import pandas as pd
+import streamlit as st
+from PIL import Image
 
-
-from utils.model import detect_defects
-from utils.camera import get_camera_frame
-from utils.video_inspection import start_video_inspection
-from utils.history import save_inspection, get_history
-
-from utils.defect_engine import (
-    generate_industrial_defects
+from app_pages.about import show_about
+from app_pages.history import show_history
+from ui.analytics_dashboard import show_analytics_dashboard
+from ui.command_center import show_command_center
+from ui.copilot_panel import show_copilot
+from ui.factory_twin import show_factory_twin
+from ui.maintenance_panel import show_maintenance_plan
+from utils.analytics import (
+    calculate_defect_severity,
+    generate_inspection_summary,
+    get_confidence_data,
 )
-
+from utils.camera import get_camera_frame
+from utils.dashboard import (
+    display_edge_status,
+    display_machine_metrics,
+    display_status_panel,
+)
+from utils.defect_engine import generate_industrial_defects
+from utils.history import save_inspection
 from utils.inspection import (
     calculate_health_score,
     get_machine_status,
     get_priority,
-    get_recommendation
+    get_recommendation,
 )
-
-from utils.analytics import (
-    calculate_defect_severity,
-    get_confidence_data,
-    generate_inspection_summary
-)
-
+from utils.machine_manager import get_machines, update_machine_health
+from utils.maintenance_planner import generate_maintenance_plan
+from utils.model import detect_defects
 from utils.report import generate_report
-
-
-from utils.dashboard import (
-    display_machine_metrics,
-    display_status_panel,
-    display_edge_status
-)
-
-
-from utils.history import (
-    save_inspection,
-    get_history,
-    format_history
-)
-
-
-from utils.machine_manager import (
-    get_machines,
-    update_machine_health
-)
-
-
+from utils.video_inspection import start_video_inspection
 
 # =====================================
 # PAGE CONFIG
 # =====================================
 
-st.set_page_config(
-    page_title="SteelVision AI",
-    page_icon="",
-    layout="wide"
-)
-
+st.set_page_config(page_title="SteelVision AI", page_icon="", layout="wide")
 
 
 # =====================================
@@ -71,47 +53,45 @@ if os.path.exists("styles/style.css"):
 
     with open("styles/style.css") as f:
 
-        st.markdown(
-            f"<style>{f.read()}</style>",
-            unsafe_allow_html=True
-        )
-
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
 # =====================================
+
+
+# Load Industrial Theme
+
+css_path = Path("styles/style.css")
+
+if css_path.exists():
+
+    st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
+
+
 # SIDEBAR
 # =====================================
 
 with st.sidebar:
 
+    st.title("STEELVISION AI")
 
-    st.title(
-        "STEELVISION AI"
-    )
-
-
-    st.caption(
-        "Edge AI Industrial Inspection Platform"
-    )
-
+    st.caption("Edge AI Industrial Inspection Platform")
 
     st.divider()
 
-
     page = st.radio(
-
         "Navigation",
-
         [
+            "Command Center",
             "Inspection Dashboard",
+            "Analytics Dashboard",
+            "Factory Digital Twin",
             "Inspection History",
             "Machine Records",
             "Edge AI Workflow",
-            "About"
-        ]
-
+            "About",
+        ],
     )
-
 
 
 # =====================================
@@ -119,8 +99,7 @@ with st.sidebar:
 # =====================================
 
 st.markdown(
-
-"""
+    """
 <div class="header-card">
 
 <h1>
@@ -136,55 +115,55 @@ Computer Vision + Edge AI for Industry 4.0
 
 </div>
 """,
-
-unsafe_allow_html=True
-
+    unsafe_allow_html=True,
 )
 
 
+# =====================================
+
 
 # =====================================
+# COMMAND CENTER
+# =====================================
+
+if page == "Command Center":
+
+    show_command_center()
+
+    st.stop()
+
+
+# =====================================
+# FACTORY DIGITAL TWIN PAGE
+# =====================================
+
+if page == "Factory Digital Twin":
+
+    show_factory_twin()
+
+    st.stop()
+
+
+# =====================================
+# ANALYTICS DASHBOARD PAGE
+# =====================================
+
+
+if page == "Analytics Dashboard":
+
+    show_analytics_dashboard()
+
+    st.stop()
+
+
 # INSPECTION HISTORY PAGE
 # =====================================
 
 if page == "Inspection History":
 
-
-    st.title(
-        " Inspection History"
-    )
-
-
-    records = get_history()
-
-
-    if not records.empty:
-
-
-        history = format_history(
-            records
-        )
-
-
-        st.dataframe(
-
-            history,
-
-            width="stretch"
-
-        )
-
-
-    else:
-
-
-        st.info(
-            "No inspection records found."
-        )
-
+    show_history()
 
     st.stop()
-
 
 
 # =====================================
@@ -193,84 +172,37 @@ if page == "Inspection History":
 
 if page == "Machine Records":
 
-
-    st.title(
-        " Machine Records"
-    )
-
+    st.title(" Machine Records")
 
     machines = get_machines()
 
-
     if machines:
-
 
         rows = []
 
-
         for machine in machines:
 
-
             rows.append(
-
-            {
-
-                "Machine ID":
-                machine.machine_id,
-
-
-                "Machine Name":
-                machine.machine_name,
-
-
-                "Type":
-                machine.machine_type,
-
-
-                "Location":
-                machine.location,
-
-
-                "Health":
-                f"{machine.current_health}%",
-
-
-                "Status":
-                machine.status,
-
-
-                "Last Inspection":
-                str(machine.last_inspection)
-
-            }
-
+                {
+                    "Machine ID": machine.machine_id,
+                    "Machine Name": machine.machine_name,
+                    "Type": machine.machine_type,
+                    "Location": machine.location,
+                    "Health": f"{machine.current_health}%",
+                    "Status": machine.status,
+                    "Last Inspection": str(machine.last_inspection),
+                }
             )
 
+        df = pd.DataFrame(rows)
 
-        df = pd.DataFrame(
-            rows
-        )
-
-
-        st.dataframe(
-
-            df,
-
-            width="stretch"
-
-        )
-
+        st.dataframe(df, width="stretch")
 
     else:
 
-
-        st.info(
-            "No machines registered."
-        )
-
+        st.info("No machines registered.")
 
     st.stop()
-
 
 
 # =====================================
@@ -279,15 +211,10 @@ if page == "Machine Records":
 
 if page == "Edge AI Workflow":
 
-
-    st.title(
-        "EDGE AI ARCHITECTURE"
-    )
-
+    st.title("EDGE AI ARCHITECTURE")
 
     st.code(
-
-"""
+        """
 Industrial Camera
 
         |
@@ -310,18 +237,12 @@ Machine Health Intelligence
 
 Maintenance Recommendation
 """
-
     )
 
-
-    st.subheader(
-        "Production Architecture"
-    )
-
+    st.subheader("Production Architecture")
 
     st.write(
-
-"""
+        """
 Frontend:
 React
 
@@ -341,12 +262,9 @@ PostgreSQL
 Deployment:
 Docker + Edge Hardware
 """
-
     )
 
-
     st.stop()
-
 
 
 # =====================================
@@ -355,25 +273,7 @@ Docker + Edge Hardware
 
 if page == "About":
 
-
-    st.title(
-        "About SteelVision AI"
-    )
-
-
-    st.write(
-
-"""
-SteelVision AI is an Industry 4.0
-Edge AI inspection platform.
-
-It combines Computer Vision,
-Machine Health Intelligence,
-and Predictive Maintenance.
-"""
-
-    )
-
+    show_about()
 
     st.stop()
 # =====================================
@@ -381,28 +281,15 @@ and Predictive Maintenance.
 # =====================================
 
 
-st.subheader(
-    "MACHINE INSPECTION DASHBOARD"
-)
-
+st.subheader("MACHINE INSPECTION DASHBOARD")
 
 
 mode = st.radio(
-
-    "Inspection Mode",
-
-    [
-        "Upload Image",
-        "Live Camera",
-        "Real-Time Video Inspection"
-    ]
-
+    "Inspection Mode", ["Upload Image", "Live Camera", "Real-Time Video Inspection"]
 )
 
 
-
 image = None
-
 
 
 # =====================================
@@ -412,26 +299,13 @@ image = None
 
 if mode == "Upload Image":
 
-
     uploaded_file = st.file_uploader(
-
-        "Upload Machine Image",
-
-        type=[
-            "jpg",
-            "jpeg",
-            "png"
-        ]
-
+        "Upload Machine Image", type=["jpg", "jpeg", "png"]
     )
-
 
     if uploaded_file:
 
-
-        image = Image.open(
-            uploaded_file
-        )
+        image = Image.open(uploaded_file)
 
 
 elif mode == "Real-Time Video Inspection":
@@ -439,22 +313,14 @@ elif mode == "Real-Time Video Inspection":
     start_video_inspection()
 
     st.stop()
-    
+
 else:
 
+    st.info(" Edge Camera Mode")
 
-    st.info(
-        " Edge Camera Mode"
-    )
-
-
-    if st.button(
-        "Capture Frame"
-    ):
-
+    if st.button("Capture Frame"):
 
         image = get_camera_frame()
-
 
 
 # =====================================
@@ -462,389 +328,166 @@ else:
 # =====================================
 
 
-machine_id = st.text_input(
-    "Machine ID",
-    "MACHINE_001"
-)
+machine_id = st.text_input("Machine ID", "MACHINE_001")
 
 
 if image:
 
-
     col1, col2 = st.columns(2)
-
-
 
     with col1:
 
+        st.subheader("Input Image")
 
-        st.subheader(
-            "Input Image"
-        )
+        st.image(image, width="stretch")
 
+    with st.spinner("Running YOLO Edge AI inspection..."):
 
-        st.image(
+        result = detect_defects(image)
 
-            image,
-
-            width="stretch"
-
-        )
-
-
-
-    with st.spinner(
-
-        "Running YOLO Edge AI inspection..."
-
-    ):
-
-
-        result = detect_defects(
-            image
-        )
-
-
-        defects = generate_industrial_defects(
-
-            result["defects"]
-
-        )
-
-
+        defects = generate_industrial_defects(result["defects"])
 
     with col2:
 
+        st.subheader("AI Detection Result")
 
-        st.subheader(
-            "AI Detection Result"
-        )
-
-
-        st.image(
-
-            result["image"],
-
-            width="stretch"
-
-        )
-
-
+        st.image(result["image"], width="stretch")
 
     # =====================================
     # INTELLIGENCE ENGINE
     # =====================================
 
+    health_score = calculate_health_score(defects)
 
-    health_score = calculate_health_score(
+    status = get_machine_status(health_score)
 
-        defects
+    priority = get_priority(health_score)
 
+    recommendation = get_recommendation(defects)
+
+    # =====================================
+    # AI MAINTENANCE PLANNER
+    # =====================================
+
+    plan = generate_maintenance_plan(
+        machine=machine_id, risk=priority, defects=defects, health=health_score
     )
 
-
-    status = get_machine_status(
-
-        health_score
-
-    )
-
-
-    priority = get_priority(
-
-        health_score
-
-    )
-
-
-    recommendation = get_recommendation(
-
-        defects
-
-    )
-
-
+    show_maintenance_plan(plan)
 
     # =====================================
     # SAVE HISTORY
     # =====================================
 
-
     save_inspection(
-
-        machine_name="Machine-01",
-
+        machine_name=machine_id,
         defects=defects,
-
         health_score=health_score,
-
         status=status,
-
         priority=priority,
-
-        recommendation=recommendation
-
+        recommendation=recommendation,
     )
-
-
 
     # =====================================
     # UPDATE MACHINE HEALTH
     # =====================================
 
-
-    update_machine_health(
-
-        machine_id="M001",
-
-        health=health_score,
-
-        status=status
-
-    )
-
-
+    update_machine_health(machine_id="M001", health=health_score, status=status)
 
     # =====================================
     # DASHBOARD METRICS
     # =====================================
 
-
     st.divider()
 
+    display_machine_metrics(health_score, status, priority, len(defects))
 
-    display_machine_metrics(
-
-        health_score,
-
-        status,
-
-        priority,
-
-        len(defects)
-
-    )
-
-
-    display_status_panel(
-
-        health_score,
-
-        status
-
-    )
-
+    display_status_panel(health_score, status)
 
     display_edge_status()
-
-
 
     # =====================================
     # DEFECT ANALYSIS
     # =====================================
 
-
     st.divider()
 
-
-    st.subheader(
-
-        " Industrial Defect Analysis"
-
-    )
-
-
+    st.subheader(" Industrial Defect Analysis")
 
     if defects:
 
-
         rows = []
-
 
         for defect in defects:
 
-
             rows.append(
-
-            {
-
-                "Defect":
-
-                defect["name"],
-
-
-                "Confidence":
-
-                f"{defect['confidence']*100:.2f}%",
-
-
-                "Severity":
-
-                calculate_defect_severity(defect)
-
-            }
-
+                {
+                    "Defect": defect["name"],
+                    "Confidence": f"{defect['confidence']*100:.2f}%",
+                    "Severity": calculate_defect_severity(defect),
+                }
             )
 
+        df = pd.DataFrame(rows)
 
+        st.dataframe(df, width="stretch")
 
-        df = pd.DataFrame(
-            rows
-        )
+        st.subheader(" Confidence Analytics")
 
+        chart = pd.DataFrame(get_confidence_data(defects))
 
-        st.dataframe(
-
-            df,
-
-            width="stretch"
-
-        )
-
-
-
-        st.subheader(
-
-            " Confidence Analytics"
-
-        )
-
-
-        chart = pd.DataFrame(
-
-            get_confidence_data(defects)
-
-        )
-
-
-        st.bar_chart(
-
-            chart.set_index(
-                "Defect"
-            )
-
-        )
-
+        st.bar_chart(chart.set_index("Defect"))
 
     else:
 
-
-        st.success(
-
-            "No defects detected."
-
-        )
-
-
+        st.success("No defects detected.")
 
     # =====================================
     # INSPECTION SUMMARY
     # =====================================
 
-
     st.divider()
 
+    st.subheader(" Inspection Summary")
 
-    st.subheader(
-
-        " Inspection Summary"
-
-    )
-
-
-    st.json(
-
-        generate_inspection_summary(
-
-            defects,
-
-            health_score,
-
-            status,
-
-            priority
-
-        )
-
-    )
-
-
+    st.json(generate_inspection_summary(defects, health_score, status, priority))
 
     # =====================================
     # MAINTENANCE
     # =====================================
 
+    st.subheader(" Maintenance Recommendation")
 
-    st.subheader(
-
-        " Maintenance Recommendation"
-
-    )
-
-
-    st.info(
-
-        recommendation
-
-    )
-
-
+    st.info(recommendation)
 
     # =====================================
     # PDF REPORT
     # =====================================
 
+    pdf = generate_report(health_score, status, priority, defects, recommendation)
 
-    pdf = generate_report(
+    st.divider()
 
-        health_score,
-
-        status,
-
-        priority,
-
-        defects,
-
-        recommendation
-
+    show_copilot(
+        machine=machine_id,
+        defects=defects,
+        health=health_score,
+        priority=priority,
+        recommendation=recommendation,
     )
-
 
     st.download_button(
-
         " Download Inspection Report",
-
         pdf,
-
-        file_name=
-
-        f"SteelVision_Report_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf",
-
-        mime="application/pdf"
-
-    )
-    
-    save_inspection(
-    machine_id,
-    defects,
-    health_score,
-    status,
-    priority
+        file_name=f"SteelVision_Report_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf",
+        mime="application/pdf",
     )
 
-    st.success(
+    save_inspection(machine_id, defects, health_score, status, priority)
 
-        "INSPECTION COMPLETED SUCCESSFULLY"
-
-    )
-
+    st.success("INSPECTION COMPLETED SUCCESSFULLY")
 
 
 else:
 
-
-    st.info(
-
-        "Upload image or capture camera frame."
-
-    )
+    st.info("Upload image or capture camera frame.")

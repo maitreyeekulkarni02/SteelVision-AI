@@ -1,0 +1,47 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+---
+
+## Version 1.0.0 — Initial Release
+
+### Added
+
+- YOLO-based industrial defect detection
+- Image inspection
+- Camera inspection
+- Video inspection
+- Industrial defect engine
+- Machine health scoring
+- Machine status prediction
+- Predictive maintenance planner
+- Analytics dashboard
+- Factory Digital Twin
+- Machine records
+- Inspection history
+- AI Copilot (Ollama + Qwen)
+- PDF inspection reports
+- SQLite database integration
+- SQLAlchemy ORM
+- Streamlit user interface
+
+---
+
+## Planned (v1.1)
+
+- Docker support
+- GitHub Actions
+- Logging
+- Improved documentation
+- Performance optimization
+
+---
+
+## Planned (v2.0)
+
+- Authentication
+- RBAC
+- RAG
+- IoT integration
+- Cloud deployment

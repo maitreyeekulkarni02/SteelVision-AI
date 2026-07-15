@@ -1,10 +1,9 @@
 import sqlite3
 from datetime import datetime
+
 import pandas as pd
 
-
 DB_NAME = "steelvision_history.db"
-
 
 
 def create_table():
@@ -12,7 +11,6 @@ def create_table():
     conn = sqlite3.connect(DB_NAME)
 
     cursor = conn.cursor()
-
 
     cursor.execute(
         """
@@ -37,21 +35,13 @@ def create_table():
         """
     )
 
-
     conn.commit()
 
     conn.close()
 
 
-
-
 def save_inspection(
-    machine_name,
-    defects,
-    health_score,
-    status,
-    priority,
-    recommendation=None
+    machine_name, defects, health_score, status, priority, recommendation=None
 ):
 
     create_table()
@@ -80,8 +70,8 @@ def save_inspection(
             len(defects),
             health_score,
             status,
-            priority
-        )
+            priority,
+        ),
     )
 
     conn.commit()
@@ -94,35 +84,27 @@ def get_history():
 
     conn = sqlite3.connect(DB_NAME)
 
-
     df = pd.read_sql_query(
         """
         SELECT *
         FROM inspections
         ORDER BY id DESC
         """,
-        conn
+        conn,
     )
-
 
     conn.close()
 
-
     return df
+
 
 def format_history(df):
 
     if df.empty:
         return df
 
-
     df = df.copy()
 
-
-    df.columns = [
-        col.replace("_", " ").title()
-        for col in df.columns
-    ]
-
+    df.columns = [col.replace("_", " ").title() for col in df.columns]
 
     return df

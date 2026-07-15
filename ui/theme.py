@@ -1,0 +1,29 @@
+"""
+SteelVision AI
+Industrial Theme
+"""
+
+PRIMARY = "#1976D2"
+SECONDARY = "#263238"
+
+SUCCESS = "#2E7D32"
+WARNING = "#F9A825"
+DANGER = "#C62828"
+
+BACKGROUND = "#F5F7FA"
+CARD = "#FFFFFF"
+
+TEXT = "#212121"
+SUBTEXT = "#616161"
+
+BORDER = "#CFD8DC"
+
+RADIUS = "16px"
+
+SHADOW = "0 4px 20px rgba(0,0,0,0.08)"
+
+TITLE_SIZE = "32px"
+
+SUBTITLE_SIZE = "18px"
+
+BODY_SIZE = "15px"

@@ -6,33 +6,22 @@ Stores industrial inspection history.
 """
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 # SQLite database for MVP
 DATABASE_URL = "sqlite:///steelvision_history.db"
 
 
 # Database engine
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={
-        "check_same_thread": False
-    }
-)
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 
 
 # Database session
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 # Base model class
 Base = declarative_base()
-
 
 
 def get_database():

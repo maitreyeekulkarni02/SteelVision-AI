@@ -1,7 +1,6 @@
 import os
-from PIL import Image
-from ultralytics import YOLO
 
+from ultralytics import YOLO
 
 # --------------------------------------------------
 # MODEL PATH
@@ -22,13 +21,12 @@ if not os.path.exists(MODEL_PATH):
 model = YOLO(MODEL_PATH)
 
 
-
 # --------------------------------------------------
 # DEFECT DETECTION FUNCTION
 # --------------------------------------------------
 
-def detect_defects(image):
 
+def detect_defects(image):
     """
     Runs YOLO inference on uploaded machine image.
 
@@ -48,52 +46,24 @@ def detect_defects(image):
 
     results = model(image)
 
-
     defects = []
-
 
     annotated_image = image.copy()
 
-
-
     for result in results:
-
 
         annotated_image = result.plot()
 
-
         boxes = result.boxes
-
 
         for box in boxes:
 
+            confidence = float(box.conf[0])
 
-            confidence = float(
-                box.conf[0]
-            )
-
-
-            class_id = int(
-                box.cls[0]
-            )
-
+            class_id = int(box.cls[0])
 
             class_name = model.names[class_id]
 
+            defects.append({"name": class_name, "confidence": confidence})
 
-            defects.append(
-                {
-                    "name": class_name,
-                    "confidence": confidence
-                }
-            )
-
-
-
-    return {
-
-        "image": annotated_image,
-
-        "defects": defects
-
-    }
+    return {"image": annotated_image, "defects": defects}
