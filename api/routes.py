@@ -3,6 +3,7 @@ import io
 from fastapi import APIRouter, File, UploadFile
 from PIL import Image
 
+from ai.agent import ask_factory_ai
 from database.database import SessionLocal
 from database.machine_models import Machine
 from utils.defect_engine import generate_industrial_defects
@@ -30,7 +31,6 @@ def health():
 async def inspect_machine(file: UploadFile = File(...)):
 
     image_bytes = await file.read()
-
     image = Image.open(io.BytesIO(image_bytes))
 
     result = detect_defects(image)
@@ -38,11 +38,8 @@ async def inspect_machine(file: UploadFile = File(...)):
     defects = generate_industrial_defects(result["defects"])
 
     health = calculate_health_score(defects)
-
     status = get_machine_status(health)
-
     priority = get_priority(health)
-
     recommendation = get_recommendation(defects)
 
     return {
@@ -66,7 +63,7 @@ def inspection_history():
 
 
 @router.get("/machines")
-def get_machine_records():
+def machine_records():
 
     db = SessionLocal()
 
@@ -90,3 +87,20 @@ def get_machine_records():
     db.close()
 
     return results
+
+
+@router.post("/copilot")
+def copilot(data: dict):
+
+    answer = ask_factory_ai(
+        machine=data["machine"],
+        defects=data["defects"],
+        health=data["health"],
+        priority=data["priority"],
+        recommendation=data["recommendation"],
+        question=data["question"],
+    )
+
+    return {
+        "answer": answer,
+    }
